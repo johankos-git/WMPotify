@@ -33,6 +33,13 @@
         }
     }
 
+    /* Hide the search icon once the clear button exists (1.2.x class name). Only on .x-filterBox-overlay:
+       a sibling-anchored "[role=searchbox] + div:has(...)" made Chrome restyle tens of thousands of
+       elements on every page navigation, and that class doesn't exist on 1.3 anyway. */
+    .x-filterBox-overlay:has(.x-filterBox-clearButton) .x-filterBox-searchIconContainer {
+        display: none;
+    }
+
     .x-filterBox-overlay,
     [role="searchbox"] + div {
         opacity: 1;
@@ -50,7 +57,6 @@
             background: url('resources/topbar/search.png') no-repeat;
         }
 
-        &:has(.x-filterBox-clearButton) .x-filterBox-searchIconContainer,
         &:has(> button) > span {
             display: none;
         }
