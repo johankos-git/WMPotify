@@ -59,6 +59,10 @@ let titleStyle = 'spotify';
 // This function runs immediately on script load
 function earlyInit() {
     document.documentElement.dataset.wmpotifyJsLoaded = 'true';
+    // Spotify 1.3 lays the scroll area out below the top bar; CSS uses this for version-specific offsets
+    if (compareSpotifyVersion('1.3.0') >= 0) {
+        document.documentElement.dataset.wmpotifySpotify13 = 'true';
+    }
 
     if (!localStorage.wmpotifyShowLibX) {
         document.body.dataset.hideLibx = 'true';

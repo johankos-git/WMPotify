@@ -39,6 +39,11 @@
         top: 29px !important;
     }
 
+    /* 1.3.x: the scroll area already starts below the top bar, so the header sticks at its top */
+    :root[data-wmpotify-spotify13] &[style*="top: 64px"] {
+        top: 0 !important;
+    }
+
     > div[role="presentation"]:first-child {
         & > button, /* Choose column button, 1.2.57 */
         & + button { /* Choose column button, 1.2.64 */
