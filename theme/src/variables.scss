@@ -393,15 +393,15 @@
 @media (forced-colors: none) {
     :root[data-wmpotify-dark-mode] {
         /* Prevent tinting.js from changing --spice-main */
-        --spice-main: #222222 !important;
+        --spice-main: #121212 !important;
         --spice-subtext: #A0A4AC;
-        --spice-shadow: #303030;
+        --spice-shadow: #202020;
         --spice-text: #E0E4EC;
-        --spice-card: #222222;
-        --spice-sidebar: #222222;
-        --spice-player: #101010;
-        --spice-main-elevated: #222222;
-        --spice-highlight-elevated: #2e2e2e;
+        --spice-card: #121212;
+        --spice-sidebar: #121212;
+        --spice-player: #0a0a0a;
+        --spice-main-elevated: #121212;
+        --spice-highlight-elevated: #1e1e1e;
         --spice-rgb-selected-row: 0, 0, 0;
 
         --button-face: #4a4a4a;
@@ -530,7 +530,7 @@
         }
 
         .encore-dark-theme {
-            --background-base: #2e2e2e;
+            --background-base: #1a1a1a;
         }
 
         &:not([data-wmpotify-control-style="xp"]) {
