@@ -136,12 +136,14 @@
 .main-globalNav-historyButtonsContainer,
 .main-globalNav-searchContainer,
 .custom-navlinks-scrollable_container,
-.main-topBar-topbarContentRight {
+.main-topBar-topbarContentRight,
+.main-globalNav-contentRight {
     /* Important is to override the Spotify's animation removal when the system animation is disabled */
     animation: appear 8s !important;
 }
 
-.main-topBar-topbarContentRight > .main-actionButtons {
+.main-topBar-topbarContentRight > .main-actionButtons,
+.main-globalNav-contentRight > .main-actionButtons > .main-actionButtons {
     > button {
         animation: appear 8s !important;
     }
@@ -171,12 +173,14 @@
 .Root__globalNav[data-wmpotify-tabs-created] {
     .main-globalNav-searchContainer,
     .custom-navlinks-scrollable_container,
-    .main-topBar-topbarContentRight > .main-actionButtons > button {
+    .main-topBar-topbarContentRight > .main-actionButtons > button,
+    .main-globalNav-contentRight > .main-actionButtons > .main-actionButtons > button {
         display: none;
     }
 
     .main-globalNav-historyButtonsContainer,
-    .main-topBar-topbarContentRight {
+    .main-topBar-topbarContentRight,
+    .main-globalNav-contentRight {
         animation: none !important;
     }
 }
@@ -186,7 +190,9 @@
     .main-globalNav-searchContainer,
     .custom-navlinks-scrollable_container,
     .main-topBar-topbarContentRight,
-    .main-topBar-topbarContentRight > .main-actionButtons > button {
+    .main-globalNav-contentRight,
+    .main-topBar-topbarContentRight > .main-actionButtons > button,
+    .main-globalNav-contentRight > .main-actionButtons > .main-actionButtons > button {
         animation: none !important;
     }
 }
@@ -301,14 +307,16 @@
     }
 }
 
-.main-topBar-topbarContentRight {
+.main-topBar-topbarContentRight,
+.main-globalNav-contentRight {
     /* Explore Premium button */
     > button:first-child {
         display: none !important;
     }
 
-    /* User button */
-    > button:last-child {
+    /* User button (1.2.x: last direct child; 1.3.x: nested user widget) */
+    > button:last-child,
+    [data-testid="user-widget-link"] {
         min-width: 64px;
         width: auto;
         height: 36px;
@@ -525,7 +533,8 @@ body[data-hide-libx] {
 }
 
 @media (max-width: 418px) {
-    .main-topBar-topbarContentRight > button:last-child {
+    .main-topBar-topbarContentRight > button:last-child,
+    .main-globalNav-contentRight [data-testid="user-widget-link"] {
         display: none !important;
     }
 }
