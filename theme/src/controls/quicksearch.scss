@@ -1,0 +1,113 @@
+/* Quick search pop-up (Ctrl+K, Spotify 1.3.x) */
+/* The frame and surface come from dialog.scss; this restyles the inside to match WMP11.
+   Structure: [role=dialog] > panel > (header > field > input) + (shortcut hints) + results listbox */
+.ReactModalPortal > div:has(> [role="dialog"] [data-testid="search-modal-input"]) {
+    /* Other WMPotify dialogs don't dim the window either */
+    background: none !important;
+}
+
+.ReactModalPortal [role="dialog"]:has([data-testid="search-modal-input"]) {
+    > div {
+        border-radius: 0 !important;
+
+        /* Header and shortcut hint rows */
+        > div:not([role="listbox"]) {
+            background: none !important;
+            border-radius: 0 !important;
+        }
+
+        /* Header: search field */
+        > div:first-child {
+            padding: 8px 8px 4px;
+
+            > div {
+                position: relative;
+                height: 24px;
+                padding: 0;
+                border: solid 1px var(--wmp11-search-border-outer);
+                border-radius: 0 !important;
+                background: var(--wmp11-search-gradient) !important;
+
+                > svg {
+                    display: none;
+                }
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    top: 1px;
+                    right: 0;
+                    width: 26px;
+                    height: 20px;
+                    background: url('resources/topbar/search.png') no-repeat;
+                    pointer-events: none;
+                }
+            }
+        }
+
+        /* Shortcut hints */
+        kbd {
+            border-radius: 0;
+        }
+    }
+
+    [data-testid="search-modal-input"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(100% - 2px);
+        height: 20px;
+        margin: 1px;
+        padding-inline: 4px 28px;
+        border: solid 1px var(--wmp11-search-border-inner);
+        background-color: var(--wmp11-search-face);
+        /* Spotify's encore text class colors it dark for its light pill */
+        color: var(--spice-text) !important;
+        font-size: 12px;
+
+        &::placeholder {
+            color: var(--gray-text);
+            font-style: italic;
+        }
+    }
+
+    /* Results: a list view with WMP selection colors */
+    [data-testid="search-modal-results"] {
+        margin: 0 8px 8px;
+        width: auto;
+        border: solid 1px var(--textbox-border-color);
+        border-radius: 0 !important;
+        background: var(--spice-main) !important;
+
+        [role="option"] {
+            border: solid 1px transparent;
+            border-radius: 0;
+            background: none;
+
+            &:hover {
+                border-color: var(--item-hover-border);
+                background: var(--item-hover-background);
+            }
+
+            &[aria-selected="true"] {
+                border-color: var(--item-active-border);
+                background: var(--item-selection-background);
+            }
+
+            &[aria-selected="true"]:hover {
+                border-color: var(--item-selection-hover-border);
+                background: var(--item-selection-hover-background);
+            }
+
+            /* Type badge ("Artist", "Track", ...) */
+            span[class*="encore-text"]:not(.hidden-visually) {
+                border-radius: 0;
+            }
+
+            .main-cardImage-imageWrapper:not(.main-cardImage-circular),
+            .main-cardImage-image:not(.main-cardImage-circular) {
+                border-radius: 0;
+            }
+        }
+    }
+}
