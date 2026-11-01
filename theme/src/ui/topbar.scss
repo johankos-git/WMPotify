@@ -312,6 +312,11 @@
     display: none !important;
 }
 
+/* Spotify's dark pill behind the user widget (1.3.x, while the checklist exists); WMPotify draws its own frame */
+.main-globalNav-contentRight > .main-actionButtons > div:not(.main-actionButtons) {
+    background: transparent !important;
+}
+
 .main-topBar-topbarContentRight,
 .main-globalNav-contentRight {
     /* Explore Premium button */
