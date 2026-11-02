@@ -16,3 +16,49 @@
         }
     }
 }
+
+/* Blurred album art behind the visualizer (cover URL comes from WMPotify NowPlaying as --wmpvis-backdrop) */
+#wmpvis {
+    background-color: #05070c !important;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: -120px;
+        background:
+            linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05) 45%, rgba(0, 0, 0, 0.7)),
+            var(--wmpvis-backdrop, none) center / cover no-repeat;
+        filter: blur(80px) saturate(1.5) brightness(0.5);
+        pointer-events: none;
+    }
+}
+
+/* Lyrics as a karaoke band at the top instead of a full-page overlay, so the visualizer stays visible.
+   The NowPlaying app sets these with inline styles; its auto-scroll centers the current line in the band. */
+#wmpvis .wmpvis-lyrics-container {
+    top: 4% !important;
+    height: 50% !important;
+    background-color: transparent !important;
+    mask-image: linear-gradient(transparent, black 28%, black 72%, transparent);
+    scrollbar-width: none;
+}
+
+#wmpvis .wmpvis-lyrics {
+    margin: 0 64px !important;
+    /* Room above the first and below the last line so they can be centered too */
+    padding-block: 25vh;
+    text-align: center;
+
+    > * {
+        display: block;
+        color: rgba(255, 255, 255, 0.32) !important;
+        transform: scale(0.94);
+        transition: color 0.35s ease, transform 0.35s ease, text-shadow 0.35s ease;
+    }
+
+    > .wmpvis-lyrics-current {
+        color: #ffffff !important;
+        transform: scale(1.06);
+        text-shadow: 0 0 18px rgba(110, 180, 255, 0.7), 0 1px 3px rgba(0, 0, 0, 0.8);
+    }
+}

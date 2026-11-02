@@ -157,7 +157,7 @@ async function wallpaperAudioListener() {
 
     // Render bars along the full width of the canvas
     const barWidth = visConfig.barWidth || Math.max(Math.round(1.0 / arraySize * visBar.width), 6);
-    const gap = 1;
+    const gap = Math.max(1, Math.round(barWidth * 0.22));
 
     visBarCtx.fillStyle = visConfig.barColor;
     visTopCtx.fillStyle = visConfig.topColor;
@@ -168,6 +168,7 @@ async function wallpaperAudioListener() {
         visBarCtx.fillStyle = schemeBarColor;
         visTopCtx.fillStyle = schemeTopColor;
     }
+    visBarCtx.fillStyle = getBarGradient(visBarCtx, visBarCtx.fillStyle, visBar.height);
 
     let leftMargin = 0;
     if (barWidth * arraySize < visBar.width) {
@@ -186,7 +187,7 @@ async function wallpaperAudioListener() {
         const height = Math.round(visBar.height * Math.min(audioArray[i], 1) * visConfig.primaryScale);
         if (height > lastBar[i]) {
             lastBar[i] = height;
-            visBarCtx.fillRect(leftMargin + barWidth * i, visBar.height - height, barWidth - gap, height);
+            drawBar(visBarCtx, leftMargin + barWidth * i, visBar.height - height, barWidth - gap, height);
         } else {
             lastBar[i] -= adjustedDecSpeed;
             const diff = audioArray[i] - lastAud[i];
@@ -196,12 +197,12 @@ async function wallpaperAudioListener() {
                     lastBar[i] = visBar.height;
                 }
             }
-            visBarCtx.fillRect(leftMargin + barWidth * i, visBar.height - lastBar[i], barWidth - gap, lastBar[i]);
+            drawBar(visBarCtx, leftMargin + barWidth * i, visBar.height - lastBar[i], barWidth - gap, lastBar[i]);
         }
         const topPos = visTop.height - Math.round(lastBar[i]) - 1;
         if (topPos < lastTop[i]) {
             lastTop[i] = topPos;
-            visTopCtx.fillRect(leftMargin + barWidth * i, topPos, barWidth - gap, 1);
+            visTopCtx.fillRect(leftMargin + barWidth * i, topPos - 1, barWidth - gap, 2);
             topSpeed[i] = 0;
             allZero = false;
         } else if (lastTop[i] < visTop.height - 1) {
@@ -220,7 +221,7 @@ async function wallpaperAudioListener() {
             } else {
                 topSpeed[i] += 1 + Math.round(adjustedDecSpeed / 3);
             }
-            visTopCtx.fillRect(leftMargin + barWidth * i, lastTop[i], barWidth - gap, 1);
+            visTopCtx.fillRect(leftMargin + barWidth * i, lastTop[i] - 1, barWidth - gap, 2);
             allZero = false;
         }
         lastAud[i] = audioArray[i];
@@ -237,6 +238,40 @@ function updateSize() {
     visTop.height = visBar.height;
     visTop.width = visBar.width;
     idle = false;
+}
+
+// Bars fade in from the bottom and brighten towards the top (cached; rebuilt only when color or height changes)
+let barGradientKey = '';
+let barGradient = null;
+function getBarGradient(ctx, color, height) {
+    const key = color + '|' + height;
+    if (key !== barGradientKey) {
+        ctx.fillStyle = color; // let the canvas normalize any CSS color to #rrggbb / rgba()
+        const norm = ctx.fillStyle;
+        let r, g, b;
+        if (norm.startsWith('#')) {
+            r = parseInt(norm.slice(1, 3), 16); g = parseInt(norm.slice(3, 5), 16); b = parseInt(norm.slice(5, 7), 16);
+        } else {
+            [r, g, b] = norm.match(/\d+(\.\d+)?/g).map(Number);
+        }
+        const light = (c) => Math.round(c + (255 - c) * 0.55);
+        // Spans the lower 35% of the canvas: most bars live there, taller ones turn light at the top
+        barGradient = ctx.createLinearGradient(0, height, 0, height * 0.65);
+        barGradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.6)`);
+        barGradient.addColorStop(0.35, `rgb(${r}, ${g}, ${b})`);
+        barGradient.addColorStop(1, `rgb(${light(r)}, ${light(g)}, ${light(b)})`);
+        barGradientKey = key;
+    }
+    return barGradient;
+}
+
+function drawBar(ctx, x, y, w, h) {
+    if (h <= 0) {
+        return;
+    }
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, [Math.min(3, w / 2, h), Math.min(3, w / 2, h), 0, 0]);
+    ctx.fill();
 }
 
 export function updateVisConfig() {
@@ -480,6 +515,16 @@ export async function init(elemRefs) {
 
     visBarCtx = visBar.getContext('2d');
     visTopCtx = visTop.getContext('2d');
+
+    // Expose the current cover as --wmpvis-backdrop so the theme can draw a blurred backdrop
+    const updateBackdrop = () => {
+        // spotify:image:<id> only resolves for <img>; CSS backgrounds need the CDN URL
+        const src = albumArt.getAttribute('src')?.replace(/^spotify:image:/, 'https://i.scdn.co/image/');
+        albumArt.parentElement?.style.setProperty('--wmpvis-backdrop', src ? `url("${src}")` : 'none');
+    };
+    albumArt.addEventListener('load', updateBackdrop);
+    albumArt.addEventListener('error', updateBackdrop);
+    updateBackdrop();
 
     updateSize();
     lastTop.fill(visTop.height);

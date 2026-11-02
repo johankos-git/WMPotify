@@ -739,6 +739,8 @@ function processTimeline(init) {
         }
         for (let i = 0; i < lyricsView.children.length; i++) {
             const lyric = lyricsView.children[i];
+            // Mark the line being sung so it can be highlighted on its own
+            lyric.classList.toggle('wmpvis-lyrics-current', i === nearestIndex);
             if (i <= nearestIndex) {
                 lyric.style.color = 'var(--wmpvis-lyrics-active)';
 
